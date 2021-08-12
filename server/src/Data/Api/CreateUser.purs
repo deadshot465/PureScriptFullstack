@@ -17,7 +17,7 @@ instance Encode CreateUserRequest where
 instance Decode CreateUserRequest where
   decode = genericDecode defaultOptions
 
-data CreateUserResultsFailureReason = AlreadyExists | NotAuthorized | NotAuthenticated
+data CreateUserResultsFailureReason = AlreadyExists | NotAuthorized | NotAuthenticated | FileIOError String
 derive instance Generic CreateUserResultsFailureReason _
 
 instance Encode CreateUserResultsFailureReason where

@@ -1,4 +1,4 @@
-module Entity.Acount where
+module Entity.Account where
 
 import Entity.User (UserRow)
 

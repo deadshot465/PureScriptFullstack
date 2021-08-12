@@ -7,7 +7,7 @@ import Data.CodePoint.Unicode (isAlpha, isAlphaNum, isLower, isUpper)
 import Data.Identity (Identity)
 import Data.String (codePointFromChar)
 import Data.String.CodeUnits (fromCharArray)
-import Entity.Acount (Account(..))
+import Entity.Account (Account(..))
 import Text.Parsing.Parser (ParserT, fail)
 import Text.Parsing.Parser.String (anyChar, char, satisfy)
 

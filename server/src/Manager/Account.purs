@@ -3,8 +3,8 @@ module Manager.Account where
 import Prelude
 
 import Crypto (passwordHashHex)
+import Data.Array (fromFoldable)
 import Data.Either (Either(..))
-import Data.Map (fromFoldable)
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -19,7 +19,7 @@ data CreateAccountError = CreateAccountAlreadyExists
 startup :: Array Account -> Aff (AVar Accounts)
 startup accounts = do
   let accountTuples = (\acc@(Account { userName } ) -> Tuple userName acc) <$> accounts
-  AVar.new $ fromFoldable accountTuples
+  AVar.new $ Map.fromFoldable accountTuples
 
 shutdown :: AVar Accounts -> Aff Unit
 shutdown = void <<< AVar.take
@@ -43,3 +43,6 @@ createAccount accountsAVar account@(Account { userName }) = do
 findAccount :: AVar Accounts -> String -> Aff (Maybe Account)
 findAccount accountsAVar userName = do
   AVar.read accountsAVar >>= pure <<< Map.lookup userName
+
+getAccounts :: AVar Accounts -> Aff (Array Account)
+getAccounts accountsAVar = AVar.read accountsAVar >>= pure <<< fromFoldable <<< Map.values

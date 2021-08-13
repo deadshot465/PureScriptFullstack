@@ -7,13 +7,12 @@ import Crypto (passwordHashHex)
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
 import Data.Newtype (unwrap)
-import Data.String.Utils (lines)
-import Data.Traversable (intercalate, sequence)
+import Data.Traversable (intercalate)
 import Effect.Aff (Aff)
 import Entity.Account (Account(..))
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (appendTextFile, exists, readTextFile, writeTextFile)
-import Parser.Account (accountParser)
+import Parser.Account (accountsParser)
 import Text.Parsing.Parser (ParseError, runParserT)
 
 data CreateAccountError = CreateAccountFileError String
@@ -44,8 +43,10 @@ loadAccounts = do
   unless exists do
     bsa <- bootstrapAccount
     writeTextFile ASCII accountsFile bsa
-  accountLines <- lines <$> readTextFile ASCII accountsFile
-  pure $ sequence $ unwrap <<< flip runParserT accountParser <$> accountLines
+  fileData <- readTextFile ASCII accountsFile
+  pure $ unwrap $ runParserT fileData accountsParser
+  --accountLines <- lines <$> readTextFile ASCII accountsFile
+  --pure $ sequence $ unwrap <<< flip runParserT accountParser <$> accountLines
 
 accountToCSV :: Account -> String
 accountToCSV (Account { userName, passwordHash, temporaryPassword, admin, firstName, lastName }) =

@@ -8,19 +8,22 @@ import Data.Either (Either(..), hush)
 import Data.Foldable (class Foldable, foldl)
 import Data.JSDate (getTime, now, toUTCString)
 import Data.Maybe (Maybe(..))
-import Data.NonEmpty ((:|), NonEmpty)
+import Data.NonEmpty (NonEmpty, (:|))
 import Data.Posix.Signal (Signal(..))
 import Data.UUID (genUUID)
 import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Effect.Class (liftEffect)
 import Effect.Class.Console (error, log)
+import Foreign (MultipleErrors)
 import HTTPure (Request, ResponseM)
 import HTTPure as HTTPure
 import Handler.Account as AccountHandler
+import Handler.Api.CreateUser (CreateUser)
 import Handler.Api.Logoff (Logoff)
 import Handler.Api.Logon (Logon)
-import Handler.Class.ApiHandler (HandlerEnv, handle)
+import Handler.Api.QueryUsers (QueryUsers)
+import Handler.Class.ApiHandler (HandlerEnv, Handler, handle)
 import Manager.Account as AccountManager
 import Manager.Session as SessionManager
 import Node.Process (onSignal)
@@ -37,10 +40,18 @@ router _ = HTTPure.notFound -}
 oneOf :: ∀ f t a. Foldable f => Alt t => NonEmpty f (t a) -> t a
 oneOf (x :| xs) = foldl (<|>) x xs
 
+apiHandlers :: NonEmpty Array (String -> Either MultipleErrors Handler)
+apiHandlers =
+  handle (Proxy :: _ Logon) :| [ 
+    handle (Proxy :: _ Logoff)
+  , handle (Proxy :: _ CreateUser)
+  , handle (Proxy :: _ QueryUsers)
+  ]
+
 router :: HandlerEnv -> Request -> ResponseM
 router env { body, method }
   | method == HTTPure.Post =
-      let handlers = handle (Proxy :: _ Logon) :| [handle (Proxy :: _ Logoff)] <#> (_ $ body) in
+      let handlers = apiHandlers <#> (_ $ body) in
       case hush $ oneOf handlers of
         Nothing -> HTTPure.badRequest body
         Just handler -> runReaderT handler env

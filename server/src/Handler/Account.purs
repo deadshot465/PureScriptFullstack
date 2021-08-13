@@ -5,7 +5,7 @@ import Prelude
 import Control.Monad.Error.Class (try)
 import Data.Bifunctor (lmap)
 import Data.Char (toCharCode)
-import Data.Either (Either, isLeft)
+import Data.Either (Either(..))
 import Data.Foldable (foldl)
 import Data.Newtype (unwrap)
 import Data.String (length)
@@ -37,8 +37,11 @@ bootstrapAccount = do
 
 loadAccounts :: Aff (Either ParseError (Array Account))
 loadAccounts = do
-  exists <- try $ exists accountsFile
-  when (isLeft exists) do
+  exists' <- try $ exists accountsFile
+  let exists = case exists' of
+                Left _ -> false
+                Right b -> b
+  unless exists do
     bsa <- bootstrapAccount
     writeTextFile ASCII accountsFile bsa
   accountLines <- lines <$> readTextFile ASCII accountsFile

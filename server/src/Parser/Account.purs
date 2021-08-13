@@ -2,6 +2,7 @@ module Parser.Account where
 
 import Prelude
 
+import Control.Alt ((<|>))
 import Data.Array (many, some, (:))
 import Data.CodePoint.Unicode (isAlpha, isAlphaNum, isLower, isUpper)
 import Data.Identity (Identity)
@@ -9,7 +10,7 @@ import Data.String (codePointFromChar)
 import Data.String.CodeUnits (fromCharArray)
 import Entity.Account (Account(..))
 import Text.Parsing.Parser (ParserT, fail)
-import Text.Parsing.Parser.String (anyChar, char, satisfy)
+import Text.Parsing.Parser.String (char, satisfy, string)
 
 type AccountParserT a = ParserT String Identity a
 
@@ -22,12 +23,13 @@ passwordHash :: AccountParserT String
 passwordHash = hex
 
 boolean :: AccountParserT Boolean
-boolean = do
-  bool <- fromCharArray <$> some anyChar
+{- boolean = do
+  bool <- fromCharArray <$> some (satisfy (isAlpha <<< codePointFromChar))
   case bool of
     "true" -> pure true
     "false" -> pure false
-    _ -> fail "Invalid boolean"
+    _ -> fail "Invalid boolean" -}
+boolean = (string "true" *> pure true) <|> (string "false" *> pure false) <|> fail "Invalid Boolean"
 
 temporaryPassword :: AccountParserT Boolean
 temporaryPassword = boolean

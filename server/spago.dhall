@@ -41,6 +41,7 @@ to generate this file without the comments in this block.
   , "prelude"
   , "psci-support"
   , "quickcheck"
+  , "record"
   , "strings"
   , "stringutils"
   , "transformers"

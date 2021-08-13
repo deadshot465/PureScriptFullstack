@@ -3,26 +3,20 @@ module Handler.Account where
 import Prelude
 
 import Control.Monad.Error.Class (try)
+import Crypto (passwordHashHex)
 import Data.Bifunctor (lmap)
-import Data.Char (toCharCode)
 import Data.Either (Either(..))
-import Data.Foldable (foldl)
 import Data.Newtype (unwrap)
-import Data.String (length)
-import Data.String.CodeUnits (fromCharArray, toCharArray)
 import Data.String.Utils (lines)
 import Data.Traversable (intercalate, sequence)
 import Effect.Aff (Aff)
-import Effect.Class (liftEffect)
 import Entity.Account (Account(..))
-import Node.Crypto.Hash (Algorithm(..), hex)
 import Node.Encoding (Encoding(..))
 import Node.FS.Aff (appendTextFile, exists, readTextFile, writeTextFile)
 import Parser.Account (accountParser)
-import Random.LCG (Seed, mkSeed)
-import Test.QuickCheck (arbitrary)
-import Test.QuickCheck.Gen (sample)
 import Text.Parsing.Parser (ParseError, runParserT)
+
+data CreateAccountError = CreateAccountFileError String
 
 accountsFile :: String  
 accountsFile = "accounts.csv"
@@ -32,8 +26,14 @@ bootstrapAccount = do
   let userName = "admin"
       password = "admin"
   passwordHash <- passwordHashHex userName password
-  let true' = show true
-  pure $ intercalate "," [ userName, passwordHash, true', true', "Joe", "Admin" ]
+  pure $ accountToCSV $ Account
+    { userName
+    , passwordHash
+    , temporaryPassword: true
+    , admin: true
+    , firstName: "Joe"
+    , lastName: "Admin"
+    }
 
 loadAccounts :: Aff (Either ParseError (Array Account))
 loadAccounts = do
@@ -49,18 +49,18 @@ loadAccounts = do
 
 accountToCSV :: Account -> String
 accountToCSV (Account { userName, passwordHash, temporaryPassword, admin, firstName, lastName }) =
-  intercalate "," [ userName, passwordHash, show temporaryPassword, show admin, firstName, lastName ]
+  intercalate ","
+    [ userName
+    , passwordHash
+    , show temporaryPassword
+    , show admin
+    , firstName
+    , lastName
+    ] <> "\n"
 
-createAccount :: Account -> Aff (Either String Unit)
-createAccount account = lmap show <$> (try $ appendTextFile ASCII accountsFile $ accountToCSV account)
-
-userNameSeed :: String -> Seed
-userNameSeed name = mkSeed $ foldl (*) 1 $ toCharCode <$> toCharArray name
-
-userNameSalt :: String -> Int -> String
-userNameSalt name length = fromCharArray $ sample (userNameSeed name) length arbitrary
-
-passwordHashHex :: String -> String -> Aff String
-passwordHashHex userName password =
-  let salt = userNameSalt userName (3 * length userName) in
-  liftEffect $ hex SHA512 (password <> salt)
+createAccount :: Account -> Aff (Either CreateAccountError Unit)
+createAccount account = lmap show
+  <$> (try $ appendTextFile ASCII accountsFile $ accountToCSV account)
+  <#> case _ of
+    Left err -> Left $ CreateAccountFileError err
+    Right _ -> Right unit

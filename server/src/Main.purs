@@ -48,8 +48,9 @@ main = launchAff_ do
       accountsAVar <- AccountManager.startup accounts
       liftEffect do
         shutdown <- HTTPure.serve port (router { accountsAVar }) $ log $ "Server up running on port: " <> show port
-        let shutdownServer = do
+        let shutdownServer = launchAff_ do
               log "Shutting down server..."
-              shutdown $ log "Server shutdown."
+              AccountManager.shutdown accountsAVar
+              liftEffect $ shutdown $ log "Server shutdown."
         onSignal SIGINT shutdownServer
         onSignal SIGTERM shutdownServer

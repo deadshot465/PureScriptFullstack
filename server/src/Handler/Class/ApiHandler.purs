@@ -4,9 +4,9 @@ import Control.Monad.Reader (ReaderT)
 import Data.Either (Either)
 import Effect.AVar (AVar)
 import Effect.Aff (Aff)
+import Entity.Account (Accounts)
 import Foreign (MultipleErrors)
 import HTTPure (Response)
-import Manager.Account (Accounts)
 import Type.Proxy (Proxy)
 
 class ApiHandler :: ∀ k. k -> Constraint

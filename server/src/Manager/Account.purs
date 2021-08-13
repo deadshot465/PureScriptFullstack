@@ -2,17 +2,15 @@ module Manager.Account where
 
 import Prelude
 
-import Data.Map (Map, fromFoldable)
+import Data.Map (fromFoldable)
 import Data.Map as Map
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect.Aff (Aff)
 import Effect.Aff.AVar (AVar)
 import Effect.Aff.AVar as AVar
-import Entity.Account (Account(..))
+import Entity.Account (Account(..), Accounts)
 import Handler.Account (passwordHashHex)
-  
-type Accounts = Map String Account
 
 startup :: Array Account -> Aff (AVar Accounts)
 startup accounts = do

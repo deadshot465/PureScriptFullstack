@@ -27,6 +27,7 @@ to generate this file without the comments in this block.
   , "foreign-generic"
   , "httpure"
   , "identity"
+  , "js-date"
   , "lcg"
   , "maybe"
   , "newtype"

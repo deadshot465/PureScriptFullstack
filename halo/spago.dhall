@@ -4,6 +4,7 @@
   , "arrays"
   , "console"
   , "const"
+  , "control"
   , "css"
   , "effect"
   , "halogen"
@@ -13,6 +14,10 @@
   , "prelude"
   , "psci-support"
   , "tailrec"
+  , "web-dom"
+  , "web-events"
+  , "web-html"
+  , "web-uievents"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

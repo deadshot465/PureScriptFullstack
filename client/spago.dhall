@@ -11,6 +11,7 @@
   , "halogen"
   , "halogen-css"
   , "maybe"
+  , "nonempty"
   , "now"
   , "prelude"
   , "psci-support"

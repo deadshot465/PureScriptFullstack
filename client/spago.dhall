@@ -2,6 +2,7 @@
 , dependencies =
   [ "aff"
   , "arrays"
+  , "colors"
   , "console"
   , "const"
   , "css"

@@ -2,14 +2,14 @@ module Component.Page where
   
 import Prelude
 
-import CSS (CSS, Color, FontWeight(..), alignItems, backgroundColor, boxShadow, color, cursor, display, fixed, flex, flexBasis, flexDirection, flexEnd, flexGrow, flexShrink, flexStart, fontFamily, fontSize, fontWeight, height, justifyContent, letterSpacing, minHeight, padding, paddingLeft, paddingRight, paddingTop, pct, position, px, rem, rgb, rgba, row, sansSerif, value, vh, white, width, zIndex)
+import AppTheme (paperColor, themeColor, themeFont)
+import CSS (FontWeight(..), alignItems, backgroundColor, boxShadow, color, cursor, display, fixed, flex, flexBasis, flexDirection, flexEnd, flexGrow, flexShrink, flexStart, fontSize, fontWeight, height, justifyContent, letterSpacing, minHeight, padding, paddingLeft, paddingRight, paddingTop, pct, position, px, rem, rgba, row, value, vh, white, width, zIndex)
 import CSS as CSS
 import CSS.Common (center)
 import CSS.Cursor (pointer)
 import CSS.Text.Shadow (textShadow)
 import Capability.Navigate (class Navigate, navigate)
 import Data.Maybe (Maybe(..))
-import Data.NonEmpty ((:|))
 import Data.Route (Route)
 import Data.Route as Route
 import Effect.Aff.Class (class MonadAff)
@@ -145,12 +145,3 @@ render innerComponent { iInput } =
         ]
         [ HH.slot _inner unit innerComponent iInput Output ]
     ]
-
-paperColor :: Color
-paperColor = rgb 0xd9 0xd9 0xd9
-
-themeColor :: Color
-themeColor = rgb 0x00 0x66 0x75
-
-themeFont :: CSS
-themeFont = fontFamily [ "Verdana" ] $ sansSerif :| []

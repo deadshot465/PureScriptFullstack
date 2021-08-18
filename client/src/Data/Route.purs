@@ -19,6 +19,7 @@ data Route
   -- | Users (Maybe UserId)
 
 derive instance Generic Route _
+derive instance Eq Route
 
 routeCodec :: RouteDuplex' Route
 routeCodec = root $ sum

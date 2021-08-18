@@ -1,8 +1,8 @@
 build:
-	npx spago build
+	spago build
 
 run:
-	npx spago bundle-app
+	spago bundle-app
 	python3 -m http.server
 
 .PHONY: build run

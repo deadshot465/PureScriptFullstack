@@ -3,11 +3,12 @@ module Component.Logon where
 import Prelude
 
 import AppTheme (paperColor, themeColor, themeFont)
-import CSS (FontWeight(..), alignItems, backgroundColor, borderRadius, boxShadow, color, column, cursor, display, flex, flexDirection, flexGrow, fontSize, fontWeight, height, justifyContent, paddingBottom, paddingLeft, paddingRight, paddingTop, pct, px, rem, rgba, row, value, vw, white, width)
+import CSS (FontWeight(..), alignItems, backgroundColor, borderRadius, boxShadow, color, column, cursor, display, flex, flexDirection, flexGrow, fontSize, fontWeight, gray, height, justifyContent, paddingBottom, paddingLeft, paddingRight, paddingTop, pct, px, rem, rgba, row, value, vw, white, width)
 import CSS.Common (center)
-import CSS.Cursor (pointer)
+import CSS.Cursor (notAllowed, pointer)
 import CSS.Missing (spaceEvenly)
 import Data.Const (Const)
+import Data.String (trim)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
@@ -27,7 +28,7 @@ type State =
 
 data Action
   = Logon
-  | Input String
+  | Input (State -> State)
 
 type Query :: ∀ k. k -> Type
 type Query = Const Void
@@ -47,10 +48,10 @@ component = H.mkComponent
   }
   where
     handleAction = case _ of
-      Input value -> pure unit
+      Input f -> H.modify_ f
       Logon -> pure unit
     render :: State -> H.ComponentHTML Action Slots m
-    render {} =
+    render { userName, password } =
       HH.div
         [ HC.style do
             display flex
@@ -108,7 +109,7 @@ component = H.mkComponent
                         paddingLeft $ rem 0.5
                         paddingRight $ rem 0.5
                         fontSize $ vw 1.0
-                    , HE.onValueInput Input
+                    , HE.onValueInput $ Input <<< \s -> _ { userName = s }
                     ]
                 ]
             , HH.div
@@ -125,7 +126,7 @@ component = H.mkComponent
                   ] [ HH.text "Password: " ]
                 , HH.input [
                     HP.type_ InputPassword
-                  , HE.onValueInput Input
+                  , HE.onValueInput $ Input <<< \s -> _ { password = s }
                   , HC.style do
                       backgroundColor paperColor
                       width (vw 8.3)
@@ -151,11 +152,13 @@ component = H.mkComponent
                     fontSize $ vw 1.0
                     width (rem 20.0)
                     height $ vw 3.0
-                    color white
-                    cursor pointer
+                    color if logonDisabled then gray else white
+                    cursor if logonDisabled then notAllowed else pointer
                 , HE.onClick $ const Logon
+                , HP.disabled logonDisabled
                 ]
                 [ HH.text "LOGON" ]
             ]
         ]
-
+        where
+          logonDisabled = trim userName == "" || trim password == ""

@@ -19,6 +19,7 @@
   , "refs"
   , "routing"
   , "routing-duplex"
+  , "strings"
   , "transformers"
   , "uuid"
   ]

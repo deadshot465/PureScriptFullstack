@@ -10,3 +10,5 @@
 /.spago
 index.js
 dist
+.cache
+.parcel-cache

@@ -19,6 +19,7 @@ instance Decode LogonRequest where
 data LogonResults = 
   LogonResultsSuccess
   { authToken :: UUID
+  , admin :: Boolean
   , mustChangePassword :: Boolean
   } | LogonResultsFailure
 derive instance Generic LogonResults _

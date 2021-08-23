@@ -53,6 +53,7 @@ mimeTypes = Map.fromFoldable
   , Tuple "html" MIME.textHTML
   , Tuple "jpg" MIME.imageJPEG
   , Tuple "png" MIME.imagePNG
+  , Tuple "map" MIME.textPlain
   ]
 
 mimeType :: String -> Maybe MediaType

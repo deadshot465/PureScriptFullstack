@@ -1,6 +1,6 @@
 build:
 	spago bundle-app
-	mkdir -p dist
-	cp {index.html,index.js} dist
+	rm -f dist/*.js dist/*.map
+	NODE_OPTIONS='--max-old-space-size=4096' exec npx parcel build index.html
 
 .PHONY: build

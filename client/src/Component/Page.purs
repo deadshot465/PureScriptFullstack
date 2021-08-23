@@ -7,6 +7,7 @@ import CSS (FontWeight(..), alignItems, backgroundColor, boxShadow, color, curso
 import CSS as CSS
 import CSS.Common (center)
 import CSS.Cursor (pointer)
+import CSS.Stylesheet (StyleM)
 import CSS.Text.Shadow (textShadow)
 import Capability.Navigate (class Navigate, navigate)
 import Data.Maybe (Maybe(..))
@@ -36,11 +37,12 @@ component
   :: ∀ iInput iOutput iQuery m
   . MonadAff m
   => Navigate m Route
-  => H.Component iQuery iInput iOutput m
+  => StyleM Unit
   -> H.Component iQuery iInput iOutput m
-component innerComponent = H.mkComponent
+  -> H.Component iQuery iInput iOutput m
+component style innerComponent = H.mkComponent
   { initialState: \iInput -> { iInput }
-  , render: render innerComponent
+  , render: render style innerComponent
   , eval: H.mkEval H.defaultEval
     { handleAction = handleAction
     , handleQuery = handleQuery
@@ -69,10 +71,11 @@ handleQuery = H.query _inner unit
 render 
   :: ∀ iInput iOutput iQuery m
   . MonadAff m
-  => H.Component iQuery iInput iOutput m
+  => StyleM Unit
+  -> H.Component iQuery iInput iOutput m
   -> State iInput
   -> H.ComponentHTML (Action iInput iOutput) (Slots iQuery iOutput) m
-render innerComponent { iInput } =
+render style innerComponent { iInput } =
   HH.div
     [ HC.style do
         paddingTop $ rem 5.0
@@ -137,11 +140,11 @@ render innerComponent { iInput } =
             ]
         ]
     , HH.div
-        [ HC.style do
+        [ HC.style $ (do
             display flex
             alignItems center
             justifyContent center
-            minHeight $ vh 90.0       
+            minHeight $ vh 90.0) *> style
         ]
         [ HH.slot _inner unit innerComponent iInput Output ]
     ]

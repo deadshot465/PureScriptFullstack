@@ -25,7 +25,11 @@ handler (LogonRequest { username, password }) = do
   verifiedAccount <- lift $ verifyLogon accountsAVar username password
   response <- case verifiedAccount of
     Nothing -> pure $ LogonResponse LogonResultsFailure
-    Just (Account { temporaryPassword }) -> do
+    Just (Account { admin, temporaryPassword }) -> do
       authToken <- lift $ createSession sessionsAVar username
-      pure $ LogonResponse $ LogonResultsSuccess { authToken, mustChangePassword: temporaryPassword }
+      pure $ LogonResponse $ LogonResultsSuccess
+                              { authToken
+                              , admin
+                              , mustChangePassword: temporaryPassword
+                              }
   HTTPure.ok $ encodeJSON response

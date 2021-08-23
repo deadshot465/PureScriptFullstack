@@ -1,7 +1,9 @@
 { name = "my-project"
 , dependencies =
   [ "aff"
+  , "affjax"
   , "arrays"
+  , "bifunctors"
   , "colors"
   , "console"
   , "const"
@@ -9,11 +11,13 @@
   , "datetime"
   , "effect"
   , "either"
+  , "foreign-generic"
   , "halogen"
   , "halogen-css"
   , "maybe"
   , "nonempty"
   , "now"
+  , "ordered-collections"
   , "prelude"
   , "psci-support"
   , "refs"
@@ -22,7 +26,13 @@
   , "strings"
   , "transformers"
   , "uuid"
+  , "web-html"
   ]
 , packages = ./packages.dhall
-, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, sources =
+  [ "src/**/*.purs"
+  , "../server/src/Data/Api/**/*.purs"
+  , "../server/src/Entity/**/*.purs"
+  , "test/**/*.purs"
+  ]
 }

@@ -1,8 +1,6 @@
 build:
-	spago build
-
-run:
 	spago bundle-app
-	python3 -m http.server
+	mkdir -p dist
+	cp {index.html,index.js} dist
 
-.PHONY: build run
+.PHONY: build

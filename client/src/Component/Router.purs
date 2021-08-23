@@ -3,13 +3,17 @@ module Component.Router where
 import Prelude
 
 import CSS (color, white)
+import Capability.Log (class Log)
+import Capability.LogonRoute (class LogonRoute)
 import Capability.Navigate (class Navigate)
 import Component.Logon as Logon
 import Component.Page as Page
+import Control.Monad.Reader (class MonadAsk)
 import Data.Const (Const)
 import Data.Maybe (Maybe(..))
 import Data.Route (Route(..))
 import Effect.Aff.Class (class MonadAff)
+import Env (Env)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.CSS as HC
@@ -41,7 +45,10 @@ _changePassword = Proxy :: Proxy "changePassword"
 component
   :: ∀ m
   . MonadAff m
+  => MonadAsk Env m
   => Navigate m Route
+  => LogonRoute m Route
+  => Log m
   => H.Component Query Input Output m
 component = H.mkComponent
   { initialState: \_ -> { route: Logon }
@@ -58,7 +65,10 @@ handleQuery = case _ of
 render
   :: ∀ m
   . MonadAff m
+  => MonadAsk Env m
   => Navigate m Route
+  => LogonRoute m Route
+  => Log m
   => State
   -> H.ComponentHTML Action Slots m
 render { route } = case route of

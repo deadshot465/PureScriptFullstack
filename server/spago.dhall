@@ -17,6 +17,7 @@
   , "js-date"
   , "lcg"
   , "maybe"
+  , "media-types"
   , "newtype"
   , "node-buffer"
   , "node-fs-aff"

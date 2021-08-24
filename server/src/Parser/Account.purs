@@ -11,8 +11,8 @@ import Data.String (codePointFromChar)
 import Data.String.CodeUnits (fromCharArray)
 import Entity.Account (Account(..))
 import Text.Parsing.Parser (ParserT, fail)
-import Text.Parsing.Parser.Combinators (sepBy)
-import Text.Parsing.Parser.String (char, satisfy, string)
+import Text.Parsing.Parser.Combinators (notFollowedBy, sepBy)
+import Text.Parsing.Parser.String (anyChar, char, satisfy, string)
 
 type AccountParserT a = ParserT String Identity a
 
@@ -78,4 +78,7 @@ accountParser = do
     comma p = p <* char ','
 
 accountsParser :: AccountParserT (Array Account)
-accountsParser = (Just <$> accountParser <|> pure Nothing) `sepBy` char '\n' <#> catMaybes <<< fromFoldable
+accountsParser =
+  ((Just <$> accountParser <|> pure Nothing)
+  `sepBy` char '\n' <#> catMaybes <<< fromFoldable)
+  <* notFollowedBy anyChar <|> fail "Failed to parse complete file."

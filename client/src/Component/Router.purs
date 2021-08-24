@@ -2,11 +2,12 @@ module Component.Router where
   
 import Prelude
 
-import CSS (alignItems, color, flexStart, justifyContent, padding, rem, stretch, white)
+import CSS (alignItems, flexStart, justifyContent, padding, rem, stretch)
 import Capability.Log (class Log)
 import Capability.LogonRoute (class LogonRoute)
 import Capability.Navigate (class Navigate, navigate)
 import Component.ChangePassword as ChangePassword
+import Component.Logoff as Logoff
 import Component.Logon as Logon
 import Component.Page as Page
 import Component.Users as Users
@@ -19,7 +20,6 @@ import Effect.Ref as Ref
 import Env (Env)
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.CSS as HC
 import Type.Proxy (Proxy(..))
 
 type Input = Unit
@@ -72,7 +72,7 @@ handleQuery = case _ of
   Navigate route a -> do
     { userRef } <- ask
     ref <- H.liftEffect $ Ref.read userRef
-    if isNothing ref then navigate Logon
+    if isNothing ref && route /= Logon then navigate Logon
     else H.modify_ _ { route = route }
     pure (Just a)
 
@@ -88,7 +88,8 @@ render
 render { route } = case route of
   Logon ->
     HH.slot _logon unit (defaultPage Logon.component) unit absurd
-  Logoff -> HH.span [ HC.style $ color white ] [ HH.text "Logoff" ]
+  Logoff ->
+    HH.slot_ _logoff unit (defaultPage Logoff.component) unit
   Users userName' -> HH.slot_ _users unit (wholePage Users.component) userName'
   ChangePassword ->
     HH.slot_ _changePassword unit (defaultPage ChangePassword.component) unit

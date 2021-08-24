@@ -89,7 +89,7 @@ render { route } = case route of
   Logon ->
     HH.slot _logon unit (defaultPage Logon.component) unit absurd
   Logoff -> HH.span [ HC.style $ color white ] [ HH.text "Logoff" ]
-  Users _ -> HH.slot_ _users unit (wholePage Users.component) unit
+  Users userName' -> HH.slot_ _users unit (wholePage Users.component) userName'
   ChangePassword ->
     HH.slot_ _changePassword unit (defaultPage ChangePassword.component) unit
   where
